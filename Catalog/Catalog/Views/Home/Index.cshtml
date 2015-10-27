@@ -1,0 +1,69 @@
+﻿@using PagedList.Mvc;
+@using PagedList;
+
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (ViewBag.FirstRowOfProductList == null)
+{
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <p>Nenhum registro</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in ViewBag.FirstRowOfProductList)
+        {
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 top-buffer">
+                <div class="thumbnail">
+                    <img class="img-responsive" src="@(string.IsNullOrEmpty(item.PhotoOutput) ? "http://placehold.it/250x200/F0F0F0" : item.PhotoOutput)" alt="Imagem indisponível" style="width: 250px; height: 200px"/>
+                    <div class="caption">
+                        <h3>@item.Name</h3>
+                        <p>@item.Description</p>
+                        <h4>@Html.FormatValue(@item.Preco, "{0:C}")</h4>
+                        <p>
+                            <a href="#" class="btn btn-info"><i class="glyphicon glyphicon-shopping-cart"></i> Comprar</a>
+                            <a href="#" class="btn btn-default">Detalhes &rarr;</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    if (ViewBag.SecondRowOfProductList == null)
+    {
+        return;
+    }
+
+    <div class="row">
+        @foreach (var item in ViewBag.SecondRowOfProductList)
+        {
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 top-buffer">
+                <div class="thumbnail">
+                    <img class="img-responsive" src="@(string.IsNullOrEmpty(item.PhotoOutput) ? "http://placehold.it/250x200/F0F0F0" : item.PhotoOutput)" alt="Imagem indisponível" style="width: 250px; height: 200px" />
+                    <div class="caption">
+                        <h3>@item.Name</h3>
+                        <p>@item.Description</p>
+                        <h4>@Html.FormatValue(@item.Preco, "{0:C}")</h4>
+                        <p>
+                            <a href="#" class="btn btn-info"><i class="glyphicon glyphicon-shopping-cart"></i> Comprar</a>
+                            <a href="#" class="btn btn-default">Detalhes &rarr;</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-7 col-md-offset-5">
+        @Html.PagedListPager((IPagedList)ViewBag.OnePageOfProducts, page => Url.Action("Index", new { pageNumber = page }))
+    </div>
+</div>
