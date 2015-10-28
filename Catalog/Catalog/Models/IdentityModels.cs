@@ -27,6 +27,8 @@ namespace Catalog.Models
 
         public DbSet<Product> Products { get; set; }
 
+        public DbSet<Month> Months { get; set; }
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();

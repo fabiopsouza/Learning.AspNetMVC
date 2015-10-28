@@ -169,12 +169,14 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\Contracts\IProductRepository.cs" />
     <Compile Include="Infrastructure\Contracts\IRepositoryBase.cs" />
+    <Compile Include="Infrastructure\Repositories\MonthRepository.cs" />
     <Compile Include="Infrastructure\Repositories\ProductRepository.cs" />
     <Compile Include="Infrastructure\Repositories\RepositoryBase.cs" />
     <Compile Include="Migrations\201510181519436_InitialCreate.cs" />
@@ -189,10 +191,16 @@
     <Compile Include="Migrations\201510240159308_RevertLastCommit.Designer.cs">
       <DependentUpon>201510240159308_RevertLastCommit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510280029519_Add-Month.cs" />
+    <Compile Include="Migrations\201510280029519_Add-Month.Designer.cs">
+      <DependentUpon>201510280029519_Add-Month.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Month.cs" />
+    <Compile Include="Models\MonthViewModel.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -209,6 +217,8 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\Chart.js" />
+    <Content Include="Scripts\Chart.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -260,6 +270,7 @@
     <Content Include="Views\Product\Create.cshtml" />
     <Content Include="Views\Product\Edit.cshtml" />
     <Content Include="Views\Product\Delete.cshtml" />
+    <Content Include="Views\Month\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -280,6 +291,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510240159308_RevertLastCommit.resx">
       <DependentUpon>201510240159308_RevertLastCommit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510280029519_Add-Month.resx">
+      <DependentUpon>201510280029519_Add-Month.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

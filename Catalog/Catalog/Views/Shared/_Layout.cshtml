@@ -24,6 +24,7 @@
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Months", "Index", "Month")</li>
                     @if (User.IsInRole("Admin"))
                     {
                         <li>@Html.ActionLink("Product", "Index", "Product")</li>
@@ -43,6 +44,7 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/Scripts/Chart.min.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>
