@@ -1,29 +1,19 @@
-﻿@model IEnumerable<Catalog.Models.MonthViewModel>
-@{
+﻿@{
     ViewBag.Title = "Month Charts";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
 <div class="row" style="margin-top: 15px; margin-bottom: 15px">
+    <!--Label/Input-->
     <div class="col-md-2">
-        @foreach (var month in @Model)
-        {
-            <div class="row" style="margin-top: 5px">
-                <div class="col-md-6">
-                    <label for="@month.MonthName" class="control-label">@month.MonthName</label>
-                </div>
-
-                <div class="col-md-6">
-                    <input type="number" name="@month.MonthName" class="form-control" value="@month.Value"/>
-                </div>
-            </div>
-        }
-    </div>
-    <div class="col-md-10">
-        <div>
-            <canvas id="canvas" style="height: 450px; width: 100%"></canvas>
+        <div class="row" style="margin-top: 5px">
+            <div id="inputMonthValues" class="col-md-12"></div>
         </div>
+    </div>
+    <!--Chart-->
+    <div class="col-md-10">
+        <canvas id="canvas"></canvas>
     </div>
 </div>
 <div class="row">
@@ -32,45 +22,101 @@
     </div>
 </div>
 
-@section scripts
-{
+@section scripts{
     <script type="text/javascript">
-        //var randomScalingFactor = function () { return Math.round(Math.random() * 100) };
+        var chartLabels = [];
+        var chartData = [];
 
-        var lineChartData = {
-            labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "November", "October", "December"],
-            datasets: [
-                {
+        $.ajax({
+            url: "/Month/GetMonths",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    //Set values
+                    $("#inputMonthValues").append(getInputMonthsHtml(item.MonthName, item.Value));
+                    chartLabels.push(item.MonthName);
+                    chartData.push(item.Value);
+                });
+
+                buildChart(chartData);
+            }
+        });
+
+        function updateChart() {
+            //Get values from page
+            var monthViewModel = [];
+            var monthInputs = document.getElementsByClassName("month-input");
+
+            for (var i = 0; i < monthInputs.length; i++) {
+                monthViewModel[i] = {
+                    Id: 0,
+                    MonthName: monthInputs[i].name,
+                    Value: monthInputs[i].value
+                };
+            }
+
+            var json = JSON.stringify(monthViewModel);
+
+            //Post Update
+            $.ajax({
+                type: "POST",
+                url: "/Month/UpdateMonths",
+                data: json,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    //Clear values
+                    $("#inputMonthValues").empty();
+                    chartLabels = [];
+                    chartData = [];
+
+                    $(data).each(function (index, item) {
+                        //Set values
+                        $("#inputMonthValues").append(getInputMonthsHtml(item.MonthName, item.Value));
+                        chartLabels.push(item.MonthName);
+                        chartData.push(item.Value);
+
+                        buildChart(chartData);
+                    });
+                }
+            });
+        }
+
+        function buildChart(chartData) {
+            var lineChartData = {
+                labels: chartLabels,
+                datasets: [{
                     label: "My First dataset",
-                    fillColor: "rgba(151,187,205,0.2)",
+                    fillColor: "rgba(0, 0, 0, 0.7)",
                     strokeColor: "rgba(151,187,205,1)",
                     pointColor: "rgba(151,187,205,1)",
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(151,187,205,1)",
-                    //data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()]
-                    data:
-                    [
-                        @foreach (var month in Model)
-                        {
-                            @(month.Value + ",");
-                        }
-                    ]
-                }
-            ]
+                    data: chartData
+                }]
+            }
+
+            $('#canvas').replaceWith('<canvas id="canvas" style="height:480px; width: 100%"></canvas>');
+
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx).Line(lineChartData, {
+                responsive: true
+            });
         }
 
-        var ctx = document.getElementById("canvas").getContext("2d");
-        window.myLine = new Chart(ctx).Line(lineChartData, {
-            responsive: true
-        });
+        function getInputMonthsHtml(monthName, monthValue) {
+            var html = "<div class='row' style='margin-top:5px'>";
+            html += "<div class='col-md-6' style='margin-top:7px'>";
+            html += "<label for='" + monthName + " 'class='control-label pull-right'>" + monthName + "</label>";
+            html += "</div>";
+            html += "<div class='col-md-6'>";
+            html += "<input type='number' name='" + monthName + " 'class='form-control month-input' value='" + monthValue + "'/>";
+            html += "</div>";
+            html += "</div>";
 
-        function updateChart() {
-            $().post("Month/UpdateChart", @Model, updateCharSuccess(),"json");
-        }
-
-        function updateCharSuccess() {
-            alert("teste success");
+            return html;
         }
     </script>
 }
