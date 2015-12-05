@@ -1,0 +1,85 @@
+﻿@model Catalog.Models.WaitViewModel
+@{
+    ViewBag.Title = "Wait Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Wait Page Test</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            @using (Ajax.BeginForm("Index", "Wait", FormMethod.Post, null, htmlAttributes: new { @id = "formWait" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Value, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Value, new { htmlAttributes = new { @id = "input-value", @class = "form-control", @placeholder = "Insira um valor" } })
+                    @Html.ValidationMessageFor(model => model.Value, "", new { @class = "text-danger" })
+                </div>
+                <button class="btn btn-default" type="submit" onclick="displayProgressMessage()">Salvar</button>
+            }
+        </div>
+    </div>
+</div>
+
+<!--Wait submit progress-->
+<div class="submit-progress hidden">
+    <label>Please wait while Saving Data...</label>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        function displayProgressMessage() {
+            
+            //Validate form
+            var formValid = $("#formWait").validate().form();
+            if (!formValid) return false;
+            
+            setDisabledInAllElements(true);
+
+            $(".submit-progress").removeClass("hidden");
+            $("body").addClass("submit-progress-bg");
+
+            var json = JSON.stringify({ Value: $("#input-value").val() });
+
+            if (json != null) {
+                $.post("/Wait/Index", json)
+                .done(function (data) {
+                    setDisabledInAllElements(false);
+
+                    $(".submit-progress").addClass("hidden");
+                    $("body").removeClass("submit-progress-bg");
+                });
+            }
+        };
+
+        function setDisabledInAllElements(disabled) {
+            var i;
+
+            //input
+            var input = document.getElementsByTagName("input");
+            for (i = 0; i < input.length; i++) {
+                $(input[i]).prop("disabled", disabled);
+            }
+
+            //button
+            var button = document.getElementsByTagName("button");
+            for (i = 0; i < button.length; i++) {
+                $(button[i]).prop("disabled", disabled);
+            }
+
+            //a
+            var a = document.getElementsByTagName("a");
+            for (i = 0; i < a.length; i++) {
+                $(a[i]).prop("disabled", disabled);
+            }
+        }
+    </script>
+}

@@ -1,0 +1,156 @@
+﻿@model IEnumerable<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>
+@{
+    ViewBag.Title = "Roles";
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <h2>Manage Roles</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <a onclick="openCreateRoleModal()">Create New</a>
+    </div>
+</div>
+<div class="row">
+    <div id="listOfRoles" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+        @foreach (var role in Model)
+        {
+            <div class="row">
+                <div class="col-xs-4">
+                    <strong>@role.Name</strong>
+                </div>
+                <div class="col-xs-4">
+                    <a onclick="openEditRoleModal('@(role.Id)')">Edit</a>
+                </div>
+                <div class="col-xs-4">
+                    <a onclick="openDeleteRoleModal('@(role.Id)')" style="color: red;">Delete</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="rolesModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+
+            <div class="modal-body">
+                <input id="input-roleId" type="hidden" />
+                <label for="input-roleName">Role:</label>
+                <input id="input-roleName" type="text" class="form-control"/>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="btn-save" type="button" class="btn btn-info" onclick="editRole()">Save</button>
+                <button id="btn-create" type="button" class="btn btn-primary" onclick="createRole()">Create</button>
+                <button id="btn-delete" type="button" class="btn btn-danger" onclick="deleteRole()">Delete</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        //Open dialogs
+        function openCreateRoleModal() {
+            $("#input-roleName").removeAttr("disabled");
+            $("#input-roleName").val("");
+            $("#btn-create").show();
+            $("#btn-save").hide();
+            $("#btn-delete").hide();
+            $("#rolesModal").modal("show");
+        }
+
+        function openEditRoleModal(roleId) {
+            $.get("/Roles/GetRoleById", { Id: roleId }, function (data) {
+                $("#input-roleId").val(roleId);
+                $("#input-roleName").val(data.Name);
+                $("#input-roleName").removeAttr("disabled");
+                $("#btn-save").show();
+                $("#btn-create").hide();
+                $("#btn-delete").hide();
+                $("#rolesModal").modal("show");
+            });
+        }
+
+        function openDeleteRoleModal(roleId) {
+            $.get("/Roles/GetRoleById", { Id: roleId }, function(data) {
+                $("#input-roleId").val(roleId);
+                $("#input-roleName").val(data.Name);
+                $("#input-roleName").attr("disabled", "disabled");
+                $("#btn-delete").show();
+                $("#btn-save").hide();
+                $("#btn-create").hide();
+                $("#rolesModal").modal("show");
+            });
+        }
+
+        //Crud Operations
+        function createRole() {
+            var role = {
+                Name: $("#input-roleName").val()
+            };
+
+            $.post("/Roles/Create", role, function(data) {
+                refreshListOfRoles(data);
+            });
+        }
+
+        function editRole() {
+            var role = {
+                Id: $("#input-roleId").val(),
+                Name: $("#input-roleName").val()
+            };
+
+            $.post("/Roles/Edit", role, function(data) {
+                refreshListOfRoles(data);
+            });
+        }
+
+        function deleteRole() {
+            var role = {
+                Id: $("#input-roleId").val(),
+                Name: $("#input-roleName").val()
+            };
+
+            $.post("/Roles/Delete", role, function(data) {
+                refreshListOfRoles(data);
+            });
+        }
+
+        function refreshListOfRoles(roles) {
+            $("#listOfRoles").empty();
+
+            $(roles).each(function (index, item) {
+                $("#listOfRoles").append(getRoleRow(item));
+            });
+
+            $("#rolesModal").modal("toggle");
+        }
+
+        function getRoleRow(role) {
+            var content = "<div class=\"row\">" +
+                            "<div class=\"col-xs-4\">" +
+                            "<strong>" + role.Name + "</strong>" +
+                            "</div>" +
+                            "<div class=\"col-xs-4\">" +
+                            "<a onclick=\"openEditRoleModal('" + role.Id + "')\">Edit</a>" +
+                            "</div>" +
+                            "<div class=\"col-xs-4\">" +
+                            "<a onclick=\"openDeleteRoleModal('" + role.Id + "')\" style=\"color: red;\">Delete</a>" +
+                            "</div>" +
+                            "</div>";
+
+            return content;
+        }
+</script>
+}

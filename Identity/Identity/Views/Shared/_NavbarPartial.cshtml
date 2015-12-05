@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNet.Identity
+<ul class="nav navbar-nav">
+    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+    @if (Request.IsAuthenticated)
+    {
+        if (User.IsInRole("Admin"))
+        {
+            <li>@Html.ActionLink("Clients", "Index", "Client")</li>
+            <li>@Html.ActionLink("Roles", "Index", "Roles")</li>
+        }
+        if (User.IsInRole("Client"))
+        {
+            <li>@Html.ActionLink("Voce é um cliente!", "Index", "Home")</li>
+        }
+    }
+</ul>
